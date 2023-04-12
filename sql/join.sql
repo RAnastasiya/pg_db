@@ -69,3 +69,89 @@ JOIN phones AS p ON pto."phoneId" = p.id
 GROUP BY p.model, p.brand
 ORDER BY amount
 LIMIT 1;
+
+-- вивести телефони які купляли
+SELECT p.id
+FROM phones AS p
+JOIN phones_to_orders AS pto ON p.id = pto."phoneId"
+GROUP BY p.id
+ORDER BY p.id;
+
+-- вивести бренди телефонів які купляли
+SELECT p.brand
+FROM orders AS o
+JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+JOIN phones AS p ON pto."phoneId" = p.id
+GROUP BY p.brand;
+
+-- вивести бренди телефонів які НЕ купляли
+SELECT p.brand
+FROM phones AS p
+LEFT OUTER JOIN phones_to_orders AS pto ON p.id = pto."phoneId"
+WHERE pto."phoneId" IS NULL;
+
+--вивести моделі телефонів, які HE купляли
+SELECT p.model
+FROM phones AS p
+LEFT OUTER JOIN phones_to_orders AS pto ON p.id = pto."phoneId"
+WHERE pto."phoneId" IS NULL;
+
+--вивести пошти юзері, які не робили замовлення
+SELECT u.email
+FROM users AS u
+LEFT OUTER JOIN orders AS o ON u.id = o."userId"
+WHERE o."userId" IS NULL;
+
+SELECT u.email
+FROM orders AS o
+RIGHT OUTER JOIN users AS u ON u.id = o."userId"
+WHERE o."userId" IS NULL;
+
+--
+SELECT u.email
+FROM users AS u
+LEFT OUTER JOIN orders AS o ON u.id = o."userId"
+WHERE o."userId" IS NULL;
+
+--вивести пошту користувачів, які купляли айфон
+SELECT u.email. p.brand
+FROM users AS u
+JOIN orders AS o ON u.id = o."userId"
+JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+JOIN phones AS p ON pto."phoneId" = p.id
+WHERE p.brand ILIKE 'iphone'
+
+--вивести пошту користувачів, які зробили тільки по одному замовленню
+SELECT u.email, count(o.id)
+FROM users AS u
+JOIN orders AS o ON u.id = o."userId"
+GROUP BY u.email
+HAVING count(o.id) = 1
+
+--вивести усі айді замовлень і пошту користувачів, що купували телефон з id=8
+
+SELECT o.id, u.email
+FROM users AS u
+JOIN orders AS o ON u.id = o."userId"
+JOIN phones_to_orders AS pto ON o."userId" = pto."orderId"
+WHERE pto."phoneId" = 8
+
+-- вивести модель найпопулярнішого телефона - якого продалу більшу кількість
+SELECT p.model, sum(pto.quantity) AS total
+FROM orders AS o
+JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+JOIN phones AS p ON pto."phoneId" = p.id
+GROUP BY p.model
+ORDER BY total DESC
+LIMIT 1;
+
+
+--
+SELECT u.email, count(p.model)
+FROM users AS u
+JOIN orders AS o ON u.id = o."userId"
+JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+JOIN phones AS p ON pto."phoneId" = p.id
+GROUP BY u.email
+ORDER BY u.email
+

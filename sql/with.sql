@@ -1,5 +1,5 @@
 
-
+--1
 SELECT pto."orderId", sum(pto.quantity * p.price)
 FROM phones_to_orders AS pto
 JOIN phones AS p ON pto."phoneId" = p.id 
@@ -31,8 +31,6 @@ WHERE orders_check.check > (
         GROUP BY pto."orderId"
     ) AS orders_check
 )
-
-
 --------------------------------
 WITH orders_check AS (
     SELECT pto."orderId", sum(pto.quantity * p.price) AS check
